@@ -27,22 +27,25 @@ terraform-networking/
 └── README.md          # Este archivo
 
 ```
-⚙️ Requisitos
+## ⚙️ Requisitos
 
 - Terraform >= 1.0
 - AWS CLI configurado
 - Credenciales con permisos para crear recursos de red en AWS
 
-🚀 Cómo usar
+## 🚀 Cómo usar
 Clona este repositorio
 
 Ejecuta los siguientes comandos:
 
+```bash
 terraform init
 terraform plan -var-file="terraform.tfvars"
 terraform apply -var-file="terraform.tfvars"
 
-📤 Outputs
+```
+
+## 📤 Outputs
 Este módulo entrega los siguientes outputs, que pueden ser utilizados por otros módulos (como el de EKS):
 
 - vpc_id
@@ -50,7 +53,7 @@ Este módulo entrega los siguientes outputs, que pueden ser utilizados por otros
 - private_subnet_ids
 - availability_zones
 
-📎 Notas
+## 📎 Notas
 
 - Este módulo no crea recursos de seguridad (como grupos de seguridad o NACLs).
 - Requiere conexión a internet para que el NAT Gateway funcione correctamente.
