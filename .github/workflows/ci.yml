@@ -1,0 +1,41 @@
+# Nombre visible del workflow en la pestaña "Actions" de GitHub
+name: Terraform CI
+
+# Define cuándo se ejecuta este workflow
+on:
+  push:                # Se ejecuta cuando haces un push...
+    branches:
+      - main           # ...en la rama "main"
+  pull_request:        # También cuando se crea un pull request
+
+jobs:
+  terraform:
+    name: Terraform Format, Init, Validate & Plan
+    runs-on: ubuntu-latest    # Utiliza un runner de GitHub con Ubuntu preconfigurado
+
+    steps:
+      # Paso 1: Clonar el repositorio en el runner
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Paso 2: Instalar Terraform usando una acción oficial de HashiCorp
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.6   # Puedes cambiar esta versión si usas otra
+
+      # Paso 3: Inicializar el proyecto Terraform (descarga proveedores, etc.)
+      - name: Terraform Init
+        run: terraform init
+
+      # Paso 4: Validar el formato del código Terraform (evita errores de estilo)
+      - name: Terraform Format Check
+        run: terraform fmt -check
+
+      # Paso 5: Validar sintaxis y coherencia del código Terraform
+      - name: Terraform Validate
+        run: terraform validate
+
+      # Paso 6: Generar un plan de ejecución para ver qué haria Terraform
+      - name: Terraform Plan
+        run: terraform plan -var-file="terraform.tfvars"
