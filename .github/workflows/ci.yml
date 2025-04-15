@@ -1,46 +1,77 @@
 # Nombre visible del workflow en la pestaña "Actions" de GitHub
 name: Terraform CI
 
-# Define cuándo se ejecuta este workflow
+# Define cuándo se ejecuta el workflow
 on:
-  push:                # Se ejecuta cuando haces un push...
+  push:
     branches:
-      - main           # ...en la rama "main"
-  pull_request:        # También cuando se crea un pull request
+      - main         # Se ejecuta al hacer push en la rama main
+  pull_request:      # También se ejecuta en pull requests
 
+# Definimos tres jobs separados: format → validate → plan
 jobs:
-  terraform:
-    name: Terraform Format, Init, Validate & Plan
-    runs-on: ubuntu-latest    # Utiliza un runner de GitHub con Ubuntu preconfigurado
 
-    # Variables de entorno necesarias para que Terraform pueda autenticarse en AWS
-    env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}         # Se obtiene desde GitHub Secrets
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }} # Se obtiene desde GitHub Secrets
+  # 🚦 Primer Job: Revisar el formato del código
+  format:
+    name: ✅ Terraform Format
+    runs-on: ubuntu-latest    # Usa un runner de GitHub con Ubuntu
 
     steps:
-      # Paso 1: Clonar el repositorio en el runner
-      - name: Checkout repository
+      - name: Checkout code   # Clona el repositorio
         uses: actions/checkout@v3
 
-      # Paso 2: Instalar Terraform usando una acción oficial de HashiCorp
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.6.6   # Puedes cambiar esta versión si usas otra
+          terraform_version: 1.6.6
 
-      # Paso 3: Inicializar el proyecto Terraform (descarga proveedores, etc.)
+      - name: Terraform Format Check
+        run: terraform fmt -check    # Verifica el formato del código Terraform
+
+  # 🔍 Segundo Job: Validar la sintaxis (solo si pasó el formato)
+  validate:
+    name: 🔍 Terraform Validate
+    runs-on: ubuntu-latest
+    needs: format    # Este job se ejecuta solo si "format" fue exitoso
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.6
+
+      - name: Terraform Init
+        run: terraform init    # Inicializa el proyecto Terraform
+
+      - name: Terraform Validate
+        run: terraform validate    # Valida sintaxis, tipos y dependencias
+
+  # 📦 Tercer Job: Planificar cambios en la infraestructura (solo si validó bien)
+  plan:
+    name: 📦 Terraform Plan
+    runs-on: ubuntu-latest
+    needs: validate    # Solo se ejecuta si "validate" fue exitoso
+
+    # Se pasan las credenciales AWS desde los secrets de GitHub
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.6
+
       - name: Terraform Init
         run: terraform init
 
-      # Paso 4: Validar el formato del código Terraform (evita errores de estilo)
-      - name: Terraform Format Check
-        run: terraform fmt -check
-
-      # Paso 5: Validar sintaxis y coherencia del código Terraform
-      - name: Terraform Validate
-        run: terraform validate
-
-      # Paso 6: Generar un plan de ejecución para ver qué haria Terraform
       - name: Terraform Plan
-        run: terraform plan -var-file="terraform.tfvars"
+        run: terraform plan -var-file="terraform.tfvars"   # Usa el archivo de variables
+
