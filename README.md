@@ -58,3 +58,5 @@ Este módulo entrega los siguientes outputs, que pueden ser utilizados por otros
 - Este módulo no crea recursos de seguridad (como grupos de seguridad o NACLs).
 - Requiere conexión a internet para que el NAT Gateway funcione correctamente.
 - Idealmente se combina con otros módulos como terraform-eks, ansible-bootstrap, etc.
+
+<!-- Triggered GitHub Actions -->
