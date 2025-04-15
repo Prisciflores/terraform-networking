@@ -13,6 +13,11 @@ jobs:
     name: Terraform Format, Init, Validate & Plan
     runs-on: ubuntu-latest    # Utiliza un runner de GitHub con Ubuntu preconfigurado
 
+    # Variables de entorno necesarias para que Terraform pueda autenticarse en AWS
+    env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}         # Se obtiene desde GitHub Secrets
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }} # Se obtiene desde GitHub Secrets
+
     steps:
       # Paso 1: Clonar el repositorio en el runner
       - name: Checkout repository
