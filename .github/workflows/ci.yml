@@ -4,9 +4,20 @@ name: Terraform CI
 # Define cuándo se ejecuta este workflow
 on:
   push:
-    branches:
-      - main            # Se ejecuta al hacer push a la rama main
-  pull_request:         # También al crear un pull request
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      tf_action:
+        description: 'Acción a ejecutar con Terraform'
+        required: true
+        default: 'apply'
+        type: choice
+        options:
+          - apply
+          - destroy
+
 
 jobs:
 
