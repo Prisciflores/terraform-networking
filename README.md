@@ -59,4 +59,4 @@ Este módulo entrega los siguientes outputs, que pueden ser utilizados por otros
 - Requiere conexión a internet para que el NAT Gateway funcione correctamente.
 - Idealmente se combina con otros módulos como terraform-eks, ansible-bootstrap, etc.
 
-<!-- Triggered GitHub Actions -->
+<!----- Triggered GitHub Actions ---->
