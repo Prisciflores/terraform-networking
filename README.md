@@ -59,4 +59,31 @@ Este módulo entrega los siguientes outputs, que pueden ser utilizados por otros
 - Requiere conexión a internet para que el NAT Gateway funcione correctamente.
 - Idealmente se combina con otros módulos como terraform-eks, ansible-bootstrap, etc.
 
-<!----- Triggered GitHub Actions ---->
+<!--- 🛠️ GitHub Actions CI/CD con Terraform ----->
+
+## 🚀 CI/CD con GitHub Actions
+
+Este repositorio incluye un pipeline CI/CD automatizado que valida y ejecuta Terraform de forma segura.
+
+### 📋 Descripción de los jobs
+
+| Job                | Descripción                                                                 | Dependencias      | Notas adicionales                                                        |
+|--------------------|-----------------------------------------------------------------------------|--------------------|--------------------------------------------------------------------------|
+| 🧹 `format`        | Verifica que el código esté bien formateado con `terraform fmt`             | -                  | Primer paso del pipeline                                                 |
+| 🔍 `validate`      | Valida sintaxis y dependencias del código con `terraform validate`          | `format`           | Solo se ejecuta si el formato es válido                                 |
+| 📦 `plan`          | Genera un plan de ejecución (`terraform plan`) y lo guarda como artefacto   | `validate`         | El plan generado es visible y descargable desde GitHub                  |
+| 🚀 `deploy`        | Ejecuta `apply` o `destroy` dependiendo del input manual del usuario         | `plan`             | Requiere aprobación en el environment `production`                      |
+
+### 🧠 Inputs del pipeline
+
+El pipeline puede ser ejecutado manualmente desde la pestaña **Actions > Run workflow**, con el siguiente input:
+
+| Input      | Descripción                                | Opciones disponibles |
+|------------|--------------------------------------------|----------------------|
+| `tf_action`| Acción a ejecutar sobre la infraestructura | `apply`, `destroy`   |
+
+### 🔐 Environments y seguridad
+
+- El job `deploy` está asociado al **environment `production`**, que requiere revisión manual antes de ejecutar cambios.
+- Se utilizan **GitHub Secrets** para autenticarse en AWS (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`).
+
