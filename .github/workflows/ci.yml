@@ -62,6 +62,16 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
     steps:
+      - name: Esperar aprobación manual
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ secrets.GITHUB_TOKEN }}
+          approvers: Priscilflores        # Tu nombre de usuario en GitHub
+          minimum-approvals: 1
+          issue-title: "¿Aplicamos cambios con Terraform?"
+          issue-body: "Aprueba este paso si estás lista para aplicar los cambios al entorno."
+          exclude-workflow-initiator-as-approver: false
+
       - name: Checkout code
         uses: actions/checkout@v4
 
